@@ -1,0 +1,13 @@
+{
+  "name": "prueba-audiogg-addon",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "publish": "node publish.mjs"
+  },
+  "dependencies": {
+    "bencode": "^4.0.0",
+    "create-torrent": "^6.1.0"
+  }
+}
