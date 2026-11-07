@@ -3,7 +3,12 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 import { spawnSync } from 'node:child_process'
 import createTorrent from 'create-torrent'
-import bencode from 'bencode'
+
+const TRACKERS = [
+  'wss://tracker.openwebtorrent.com',
+  'wss://tracker.btorrent.xyz',
+  'udp://tracker.opentrackr.org:1337/announce'
+]
 
 function arg(name, fallback = null) {
   const i = process.argv.indexOf('--' + name)
@@ -51,11 +56,6 @@ async function makeTorrent(input, opts) {
   })
 }
 
-function infoHashFromTorrent(buf) {
-  const decoded = bencode.decode(buf)
-  return crypto.createHash('sha1').update(bencode.encode(decoded.info)).digest('hex')
-}
-
 function remoteFile(repo, branch, repoPath) {
   const r = gh([
     'api',
@@ -83,6 +83,29 @@ function putFile(repo, branch, repoPath, content, message) {
   ghJson(['api', 'repos/' + repo + '/contents/' + repoPath, '--method', 'PUT'], payload)
 }
 
+async function uploadToSeedNode({ seedNodeUrl, token, id, input, torrent }) {
+  const form = new FormData()
+  const audioBuffer = fs.readFileSync(input)
+  form.append('audio', new Blob([audioBuffer]), path.basename(input))
+  form.append('torrent', new Blob([torrent]), id + '.torrent')
+  form.append('id', id)
+  form.append('fileName', path.basename(input))
+
+  const response = await fetch(seedNodeUrl.replace(/\/$/, '') + '/admin/publish', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token },
+    body: form
+  })
+
+  let data
+  try { data = await response.json() } catch { data = null }
+
+  if (!response.ok || !data?.ok) {
+    throw new Error(data?.error || ('Seed node HTTP ' + response.status))
+  }
+  return data
+}
+
 async function main() {
   const input = path.resolve(required('input'))
   const title = required('title')
@@ -92,6 +115,8 @@ async function main() {
   const rights = required('rights')
   const repo = arg('repo', 'gaelnav1/prueba-audiogg-addon')
   const branch = arg('branch', 'audiogg-addon')
+  const seedNodeUrl = arg('seed-node', process.env.SEED_NODE_URL)
+  const seedToken = arg('seed-token', process.env.SEED_UPLOAD_TOKEN)
   const id = slug(arg('id', title)) || crypto.randomUUID()
 
   if (!fs.existsSync(input) || !fs.statSync(input).isFile()) {
@@ -100,60 +125,38 @@ async function main() {
   if (!['owned','licensed','public-domain'].includes(rights)) {
     throw new Error('--rights debe ser owned, licensed o public-domain')
   }
+  if (!seedNodeUrl) throw new Error('Falta --seed-node o SEED_NODE_URL')
+  if (!seedToken) throw new Error('Falta --seed-token o SEED_UPLOAD_TOKEN')
 
   gh(['auth','status'])
-
   const view = JSON.parse(gh(['repo','view',repo,'--json','isPrivate']).stdout)
-  if (view.isPrivate) throw new Error('El repo debe ser público')
+  if (view.isPrivate) throw new Error('El repo del addon debe ser público')
 
-  const originalName = path.basename(input)
-  const extension = path.extname(originalName).toLowerCase()
-  const safeAssetName = (slug(id) || 'audio') + extension
-  const tempDir = fs.mkdtempSync(path.join(process.cwd(), '.audiogg-upload-'))
-  const safeInput = path.join(tempDir, safeAssetName)
-  fs.copyFileSync(input, safeInput)
-
-  const tag = 'audiogg-' + id + '-' + Date.now()
-  const assetUrl =
-    'https://github.com/' + repo + '/releases/download/' +
-    encodeURIComponent(tag) + '/' + encodeURIComponent(safeAssetName)
-
-  console.log('1/4 Subiendo audio remoto...')
-  gh([
-    'release','create',tag,
-    '--repo',repo,
-    '--title','Audio GG: ' + title,
-    '--notes','Rights: ' + rights + '. License: ' + license + '.',
-    safeInput
-  ])
-
-  console.log('2/4 Generando torrent con webseed remoto...')
+  console.log('1/3 Generando torrent...')
   const torrent = await makeTorrent(input, {
-    name: originalName,
-    createdBy: 'Audio GG external addon demo',
+    name: path.basename(input),
+    createdBy: 'Audio GG external publisher',
     comment: title,
-    urlList: [assetUrl]
+    announce: TRACKERS
   })
-  const infoHash = infoHashFromTorrent(torrent)
 
-  const tmp = path.join(process.cwd(), id + '.torrent')
-  fs.writeFileSync(tmp, torrent)
-  gh(['release','upload',tag,tmp,'--repo',repo])
-  fs.unlinkSync(tmp)
-  fs.rmSync(tempDir, { recursive:true, force:true })
+  console.log('2/3 Subiendo audio + torrent al seed node...')
+  const seeded = await uploadToSeedNode({
+    seedNodeUrl,
+    token: seedToken,
+    id,
+    input,
+    torrent
+  })
 
-  const torrentUrl =
-    'https://github.com/' + repo + '/releases/download/' +
-    encodeURIComponent(tag) + '/' + encodeURIComponent(id + '.torrent')
-
-  console.log('3/4 Publicando Source Protocol...')
+  console.log('3/3 Publicando descriptor P2P del addon...')
   const base = 'https://raw.githubusercontent.com/' + repo + '/' + branch + '/.audiogg'
 
   const manifest = {
     protocolVersion:'1.0',
     id:'com.github.' + repo.replace('/','.'),
     name:'Prueba Audio GG Addon',
-    version:'1.0.0',
+    version:'1.1.0',
     types:['track','album','podcast','audiobook','concert'],
     resources:['catalog','meta','stream'],
     transports:['p2p']
@@ -175,29 +178,29 @@ async function main() {
     ok:true,
     streams:[{
       transport:'p2p',
-      infoHash,
+      infoHash:seeded.infoHash,
+      magnet:seeded.magnet,
       fileIndex:0,
-      magnet:torrentUrl,
-      torrentUrl,
       title,
-      format:path.extname(originalName).slice(1).toLowerCase()
+      format:path.extname(input).slice(1).toLowerCase()
     }]
   }
 
   putFile(repo,branch,'.audiogg/manifest.json',JSON.stringify(manifest,null,2)+'\n','Publish manifest')
   putFile(repo,branch,'.audiogg/catalog',JSON.stringify(catalog,null,2)+'\n','Publish catalog')
   putFile(repo,branch,'.audiogg/meta/'+type+'/'+id+'.json',JSON.stringify(meta,null,2)+'\n','Publish metadata')
-  putFile(repo,branch,'.audiogg/stream/'+type+'/'+id+'.json',JSON.stringify(stream,null,2)+'\n','Publish stream')
+  putFile(repo,branch,'.audiogg/stream/'+type+'/'+id+'.json',JSON.stringify(stream,null,2)+'\n','Publish torrent-only stream')
 
-  console.log('4/4 Listo.')
   console.log(JSON.stringify({
     ok:true,
     sourceBaseUrl:base,
     manifestUrl:base + '/manifest.json',
-    torrentUrl,
-    infoHash,
+    infoHash:seeded.infoHash,
+    magnet:seeded.magnet,
+    seedNode:seedNodeUrl,
     localSeed:false,
-    message:'Puedes apagar esta computadora.'
+    httpAudioFallback:false,
+    message:'El audio quedó almacenado en el seed node y publicado como torrent-only.'
   }, null, 2))
 }
 
