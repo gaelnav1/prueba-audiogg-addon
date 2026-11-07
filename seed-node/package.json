@@ -1,0 +1,17 @@
+{
+  "name": "audiogg-seed-node",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.mjs",
+    "check": "node --check src/index.mjs"
+  },
+  "dependencies": {
+    "bencode": "^4.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "multer": "^2.0.2",
+    "webtorrent": "^3.0.21"
+  }
+}
