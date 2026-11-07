@@ -179,6 +179,7 @@ async function main() {
       fileIndex:0,
       magnet:torrentUrl,
       torrentUrl,
+      fallbackUrl:assetUrl,
       title,
       format:path.extname(originalName).slice(1).toLowerCase()
     }]
