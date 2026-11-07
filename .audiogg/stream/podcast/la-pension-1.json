@@ -8,7 +8,8 @@
       "magnet": "https://github.com/gaelnav1/prueba-audiogg-addon/releases/download/audiogg-la-pension-1-1794015559568/la-pension-1.torrent",
       "torrentUrl": "https://github.com/gaelnav1/prueba-audiogg-addon/releases/download/audiogg-la-pension-1-1794015559568/la-pension-1.torrent",
       "title": "La Pensión #1",
-      "format": "m4a"
+      "format": "m4a",
+      "fallbackUrl": "https://github.com/gaelnav1/prueba-audiogg-addon/releases/download/audiogg-la-pension-1-1794015559568/la-pension-1.m4a"
     }
   ]
 }
