@@ -184,6 +184,7 @@ async function main() {
       infoHash:seeded.infoHash,
       magnet:seeded.magnet,
       torrentUrl,
+      directPeer:arg('direct-peer', process.env.SEED_DIRECT_PEER || null),
       fileIndex:0,
       title,
       format:path.extname(input).slice(1).toLowerCase()
