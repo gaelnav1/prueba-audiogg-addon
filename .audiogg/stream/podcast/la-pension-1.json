@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "streams": [
+    {
+      "transport": "p2p",
+      "infoHash": "3c0f554fa8c840c760e987518e9b14f25f5ad191",
+      "fileIndex": 0,
+      "magnet": "https://github.com/gaelnav1/prueba-audiogg-addon/releases/download/audiogg-la-pension-1-1794015559568/la-pension-1.torrent",
+      "torrentUrl": "https://github.com/gaelnav1/prueba-audiogg-addon/releases/download/audiogg-la-pension-1-1794015559568/la-pension-1.torrent",
+      "title": "La Pensión #1",
+      "format": "m4a"
+    }
+  ]
+}
