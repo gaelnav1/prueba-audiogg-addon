@@ -4,9 +4,8 @@
     {
       "transport": "p2p",
       "infoHash": "3c0f554fa8c840c760e987518e9b14f25f5ad191",
+      "magnet": "magnet:?xt=urn:btih:3c0f554fa8c840c760e987518e9b14f25f5ad191&dn=001+-+%C2%BFQu%C3%A9+hemos+hecho%EF%BC%9F+%C2%BFPor+qu%C3%A9+termino+el+Mediovlog%EF%BC%9F+I+La+Pensi%C3%B3n+%231.m4a&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce",
       "fileIndex": 0,
-      "magnet": "https://github.com/gaelnav1/prueba-audiogg-addon/releases/download/audiogg-la-pension-1-1794015559568/la-pension-1.torrent",
-      "torrentUrl": "https://github.com/gaelnav1/prueba-audiogg-addon/releases/download/audiogg-la-pension-1-1794015559568/la-pension-1.torrent",
       "title": "La Pensión #1",
       "format": "m4a"
     }
