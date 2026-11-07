@@ -106,11 +106,17 @@ async function main() {
   const view = JSON.parse(gh(['repo','view',repo,'--json','isPrivate']).stdout)
   if (view.isPrivate) throw new Error('El repo debe ser público')
 
-  const assetName = path.basename(input)
+  const originalName = path.basename(input)
+  const extension = path.extname(originalName).toLowerCase()
+  const safeAssetName = (slug(id) || 'audio') + extension
+  const tempDir = fs.mkdtempSync(path.join(process.cwd(), '.audiogg-upload-'))
+  const safeInput = path.join(tempDir, safeAssetName)
+  fs.copyFileSync(input, safeInput)
+
   const tag = 'audiogg-' + id + '-' + Date.now()
   const assetUrl =
     'https://github.com/' + repo + '/releases/download/' +
-    encodeURIComponent(tag) + '/' + encodeURIComponent(assetName)
+    encodeURIComponent(tag) + '/' + encodeURIComponent(safeAssetName)
 
   console.log('1/4 Subiendo audio remoto...')
   gh([
@@ -118,12 +124,12 @@ async function main() {
     '--repo',repo,
     '--title','Audio GG: ' + title,
     '--notes','Rights: ' + rights + '. License: ' + license + '.',
-    input
+    safeInput
   ])
 
   console.log('2/4 Generando torrent con webseed remoto...')
   const torrent = await makeTorrent(input, {
-    name: assetName,
+    name: originalName,
     createdBy: 'Audio GG external addon demo',
     comment: title,
     urlList: [assetUrl]
@@ -134,6 +140,7 @@ async function main() {
   fs.writeFileSync(tmp, torrent)
   gh(['release','upload',tag,tmp,'--repo',repo])
   fs.unlinkSync(tmp)
+  fs.rmSync(tempDir, { recursive:true, force:true })
 
   const torrentUrl =
     'https://github.com/' + repo + '/releases/download/' +
@@ -173,7 +180,7 @@ async function main() {
       magnet:torrentUrl,
       torrentUrl,
       title,
-      format:path.extname(assetName).slice(1).toLowerCase()
+      format:path.extname(originalName).slice(1).toLowerCase()
     }]
   }
 
