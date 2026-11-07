@@ -2,7 +2,7 @@
   "protocolVersion": "1.0",
   "id": "com.github.gaelnav1.prueba-audiogg-addon",
   "name": "Prueba Audio GG Addon",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "types": [
     "track",
     "album",
