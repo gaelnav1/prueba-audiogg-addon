@@ -174,12 +174,16 @@ async function main() {
   catalog.results.push(item)
 
   const meta = { ok:true, meta:item }
+  const torrentPath = '.audiogg/torrents/' + id + '.torrent'
+  const torrentUrl = base + '/torrents/' + id + '.torrent'
+
   const stream = {
     ok:true,
     streams:[{
       transport:'p2p',
       infoHash:seeded.infoHash,
       magnet:seeded.magnet,
+      torrentUrl,
       fileIndex:0,
       title,
       format:path.extname(input).slice(1).toLowerCase()
@@ -189,6 +193,7 @@ async function main() {
   putFile(repo,branch,'.audiogg/manifest.json',JSON.stringify(manifest,null,2)+'\n','Publish manifest')
   putFile(repo,branch,'.audiogg/catalog',JSON.stringify(catalog,null,2)+'\n','Publish catalog')
   putFile(repo,branch,'.audiogg/meta/'+type+'/'+id+'.json',JSON.stringify(meta,null,2)+'\n','Publish metadata')
+  putFile(repo,branch,torrentPath,torrent,'Publish torrent metadata')
   putFile(repo,branch,'.audiogg/stream/'+type+'/'+id+'.json',JSON.stringify(stream,null,2)+'\n','Publish torrent-only stream')
 
   console.log(JSON.stringify({
@@ -197,6 +202,7 @@ async function main() {
     manifestUrl:base + '/manifest.json',
     infoHash:seeded.infoHash,
     magnet:seeded.magnet,
+    torrentUrl,
     seedNode:seedNodeUrl,
     localSeed:false,
     httpAudioFallback:false,
