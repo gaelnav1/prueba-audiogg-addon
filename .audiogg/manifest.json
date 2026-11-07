@@ -1,0 +1,21 @@
+{
+  "protocolVersion": "1.0",
+  "id": "com.github.gaelnav1.prueba-audiogg-addon",
+  "name": "Prueba Audio GG Addon",
+  "version": "1.0.0",
+  "types": [
+    "track",
+    "album",
+    "podcast",
+    "audiobook",
+    "concert"
+  ],
+  "resources": [
+    "catalog",
+    "meta",
+    "stream"
+  ],
+  "transports": [
+    "p2p"
+  ]
+}
