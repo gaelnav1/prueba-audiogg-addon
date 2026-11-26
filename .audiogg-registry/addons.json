@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-25",
+  "addons": [
+    {
+      "id": "com.audiogg.archiveorg",
+      "name": "Archive.org",
+      "description": "Millones de grabaciones de dominio público: música, podcasts, audiolibros y conciertos.",
+      "author": "Audio GG",
+      "kind": "builtin",
+      "visible": true,
+      "featured": true,
+      "order": 10,
+      "official": true,
+      "premium": false,
+      "installedByDefault": true,
+      "removable": false,
+      "logo": "🎵",
+      "types": [
+        "album",
+        "podcast",
+        "audiobook",
+        "concert"
+      ],
+      "quality": [
+        "mp3_128",
+        "mp3_320",
+        "flac_16"
+      ]
+    },
+    {
+      "id": "com.github.gaelnav1.prueba-audiogg-addon",
+      "name": "Prueba Audio GG Addon",
+      "description": "Source P2P de prueba para Audio GG.",
+      "author": "gaelnav1",
+      "kind": "source",
+      "visible": true,
+      "featured": true,
+      "order": 20,
+      "official": false,
+      "premium": false,
+      "installedByDefault": false,
+      "removable": true,
+      "logo": "🔌",
+      "sourceUrl": "https://raw.githubusercontent.com/gaelnav1/prueba-audiogg-addon/audiogg-addon/.audiogg",
+      "types": [
+        "track",
+        "album",
+        "podcast",
+        "audiobook",
+        "concert"
+      ],
+      "quality": [],
+      "tags": [
+        "p2p",
+        "test"
+      ]
+    }
+  ]
+}
