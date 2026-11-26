@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
   "updatedAt": "2026-11-25",
+  "title": "Audio GG Marketplace",
   "addons": [
     {
       "id": "com.audiogg.archiveorg",
       "name": "Archive.org",
-      "description": "Millones de grabaciones de dominio público: música, podcasts, audiolibros y conciertos.",
-      "author": "Audio GG",
+      "description": "Millones de grabaciones de dominio público — música, podcasts, audiolibros y conciertos en vivo.",
+      "author": "AudioGG",
       "kind": "builtin",
       "visible": true,
       "featured": true,
@@ -30,8 +31,8 @@
     },
     {
       "id": "com.github.gaelnav1.prueba-audiogg-addon",
-      "name": "Prueba Audio GG Addon",
-      "description": "Source P2P de prueba para Audio GG.",
+      "name": "Audio GG P2P Demo",
+      "description": "Source P2P de Audio GG. Incluye contenido de prueba como La Pensión #1.",
       "author": "gaelnav1",
       "kind": "source",
       "visible": true,
@@ -53,8 +54,135 @@
       "quality": [],
       "tags": [
         "p2p",
-        "test"
+        "demo"
       ]
+    },
+    {
+      "id": "com.audiogg.soulseek",
+      "name": "Soulseek",
+      "description": "Accede a colecciones de audio mediante tu propia instancia de Soulseek/slskd.",
+      "author": "AudioGG",
+      "kind": "connector",
+      "visible": true,
+      "featured": true,
+      "order": 30,
+      "official": true,
+      "premium": true,
+      "installedByDefault": false,
+      "removable": true,
+      "requiresSetup": true,
+      "logo": "🎧",
+      "types": [
+        "album",
+        "track"
+      ],
+      "quality": [
+        "mp3_320",
+        "flac_16",
+        "flac_24"
+      ],
+      "setup": {
+        "type": "slskd",
+        "urlPlaceholder": "http://localhost:5030",
+        "requiresApiKey": true
+      }
+    },
+    {
+      "id": "com.audiogg.librivox",
+      "name": "LibriVox",
+      "description": "Audiolibros de dominio público. Miles de libros en español e inglés.",
+      "author": "Comunidad",
+      "kind": "catalog",
+      "visible": true,
+      "featured": false,
+      "order": 40,
+      "official": false,
+      "premium": false,
+      "installedByDefault": false,
+      "removable": true,
+      "logo": "📚",
+      "types": [
+        "audiobook"
+      ],
+      "quality": [
+        "mp3_128"
+      ],
+      "status": "planned"
+    },
+    {
+      "id": "com.audiogg.youtube",
+      "name": "YouTube Music",
+      "description": "Conector para buscar y reproducir música desde YouTube mediante un resolver local.",
+      "author": "Comunidad",
+      "kind": "connector",
+      "visible": true,
+      "featured": false,
+      "order": 50,
+      "official": false,
+      "premium": false,
+      "installedByDefault": false,
+      "removable": true,
+      "requiresSetup": true,
+      "logo": "▶️",
+      "types": [
+        "album",
+        "track"
+      ],
+      "quality": [
+        "mp3_128",
+        "mp3_320"
+      ],
+      "status": "planned"
+    },
+    {
+      "id": "com.audiogg.plex",
+      "name": "Plex Music",
+      "description": "Conecta tu biblioteca personal de Plex.",
+      "author": "Comunidad",
+      "kind": "connector",
+      "visible": true,
+      "featured": false,
+      "order": 60,
+      "official": false,
+      "premium": true,
+      "installedByDefault": false,
+      "removable": true,
+      "requiresSetup": true,
+      "logo": "🎬",
+      "types": [
+        "album",
+        "track"
+      ],
+      "quality": [
+        "mp3_320",
+        "flac_16"
+      ],
+      "status": "planned"
+    },
+    {
+      "id": "com.audiogg.bandcamp",
+      "name": "Bandcamp",
+      "description": "Catálogo de música independiente con soporte para previews cuando estén disponibles.",
+      "author": "Comunidad",
+      "kind": "catalog",
+      "visible": true,
+      "featured": false,
+      "order": 70,
+      "official": false,
+      "premium": false,
+      "installedByDefault": false,
+      "removable": true,
+      "logo": "🎸",
+      "types": [
+        "album",
+        "track"
+      ],
+      "quality": [
+        "mp3_128",
+        "mp3_320",
+        "flac_16"
+      ],
+      "status": "planned"
     }
   ]
 }
